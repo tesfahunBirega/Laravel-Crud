@@ -1,20 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Validator;
-use App\Models\student;
+use App\Models\subject;
+
 use Illuminate\Http\Request;
 
-
-
-class student_Controller extends Controller
+class Subject_Controller extends Controller
 {
     public function index() {
-        $students = student::all();
-        if($students->count()>0){
+        $subject = subject::all();
+        if($subject->count()>0){
             return response()->json([
                 'status' =>200,
-                'students'=>$students
+                'subject'=>$subject
             ],200);
         }else{
             return response()->json([
@@ -28,14 +28,8 @@ class student_Controller extends Controller
 
     public function store(Request $request){
         $validator =Validator::make($request->all(),[
-            'name'=> 'required|string|max:191',
-            'course'=> 'required|string|max:191',
-            'email'=> 'required|string|email|max:191',
-            'phone'=> 'required|digits:10',
-            'department_id' => ['required', 'digits:1'],
-            'subject_id' => 'array' // Assuming subject_ids is an array of subject IDs
-
-            
+            'Course_Name'=> 'required|string|max:191',
+            'Course_Id' => ['required', 'digits:5']
 
         ]);
 
@@ -45,22 +39,16 @@ class student_Controller extends Controller
                 'error'=>$validator->messages()],422);
             
         }else{
-            $students=student::create([
-                'name'=>$request->name,
-                'course'=>$request->course,
-                'email'=>$request->email,
-                'phone'=>$request->phone,
-                'department_id'=>$request->department_id,
+            $subject=subject::create([
+                'Course_Name'=>$request->Course_Name,
+                'Course_Id'=>$request->Course_Id,
+
             ]);
-            // return $request->input('subject_id');
-            if($students){
-                if ($request->has('subject_id')) {
-                    $students->subject()->attach($request->input('subject_id'));
-                }
+            if($subject){
                 return response()->json([
                     'status'=>200,
                     'massage'=>"message created succefully",
-                    "students" => $students
+                    "subject" => $subject
                 ],200);
             }else{
                 return response ()->json([
@@ -71,11 +59,11 @@ class student_Controller extends Controller
         }
     }
     public function show($id){
-        $students = student::where('id',$id)->with("department")->first();
-        if($students){
+        $subject = subject::find($id);
+        if($subject){
             return response()->json([
                 'status'=>200,
-                'student'=>$students
+                'subject'=>$subject
             ],200);
         }else{
             return response ()->json([
@@ -85,11 +73,11 @@ class student_Controller extends Controller
         }
     }
     public function edit(Request $request, int $id){
-        $students = student::all();
-        if($students->count()>0){
+        $subject = subject::all();
+        if($subject->count()>0){
             return response()->json([
                 'status' =>200,
-                'students'=>$students
+                'subject'=>$subject
             ],200);
         }else{
             return response()->json([
@@ -101,10 +89,8 @@ class student_Controller extends Controller
 
     public function update(Request $request,int $id){
         $validator =Validator::make($request->all(),[
-            'name'=> 'required|string|max:191',
-            'course'=> 'required|string|max:191',
-            'email'=> 'required|string|email|max:191',
-            'phone'=> 'required|digits:10',
+            'Course_Name'=> 'required|string|max:191',
+            'Course_Id'=> 'required|string|max:191',
 
 
         ]);
@@ -115,20 +101,18 @@ class student_Controller extends Controller
                 'error'=>$validator->messages()],422);
             
         }else{
-            $students = student::find($id);
+            $subject = subject::find($id);
             
-            $students->update([ 
-                'name'=>$request->name,
-                'course'=>$request->course,
-                'email'=>$request->email,
-                'phone'=>$request->phone,
+            $subject->update([ 
+                'Course_Name'=>$request->Course_Name,
+                'Course_Id'=>$request->Course_Id,
 
             ]);
-            if($students){
+            if($subject){
                 return response()->json([
                    'status'=>200,
                     'massage'=>"message update succefully",
-                    "students" => $students
+                    "subject" => $subject
                 ],200);
             }else{
                 return response ()->json([
@@ -139,17 +123,17 @@ class student_Controller extends Controller
         }
     }
     public function destroy($id){
-     $students=student::find($id);
-     if($students){
-        $students->delete();
+     $subject=subject::find($id);
+     if($subject){
+        $subject->delete();
         return response()->json([
             'status'=>200,
-            'message'=>"Deleted student Successfull!"
+            'message'=>"Deleted subject Successfull!"
         ],200);
      }else{
         return response()->json([
             'stutes'=>404,
-            'message'=>"No such Student found"
+            'message'=>"No such subject found"
         ],404);
     }
     }
